@@ -1,11 +1,37 @@
 'use strict';
 
-const readline = require('readline');
-const stripAnsi = require('strip-ansi');
-const { dashes, dots } = require('./spinners');
+import readline from 'readline';
+import stripAnsi from 'strip-ansi';
+import stringWidth from 'string-width';
+import spinners from './spinners.json' with { type: 'json' };
 
-const VALID_STATUSES = ['succeed', 'fail', 'spinning', 'non-spinnable', 'stopped'];
-const VALID_COLORS = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'gray', 'redBright', 'greenBright', 'yellowBright', 'blueBright', 'magentaBright', 'cyanBright', 'whiteBright'];
+const { dashes, dots } = spinners;
+
+const VALID_STATUSES = [
+  'succeed',
+  'fail',
+  'spinning',
+  'non-spinnable',
+  'stopped',
+];
+const VALID_COLORS = [
+  'black',
+  'red',
+  'green',
+  'yellow',
+  'blue',
+  'magenta',
+  'cyan',
+  'white',
+  'gray',
+  'redBright',
+  'greenBright',
+  'yellowBright',
+  'blueBright',
+  'magentaBright',
+  'cyanBright',
+  'whiteBright',
+];
 
 function purgeSpinnerOptions(options) {
   const { text, status, indent } = options;
@@ -13,6 +39,7 @@ function purgeSpinnerOptions(options) {
   const colors = colorOptions(options);
 
   if (!VALID_STATUSES.includes(status)) delete opts.status;
+  if (typeof status !== 'string') delete opts.status;
   if (typeof text !== 'string') delete opts.text;
   if (typeof indent !== 'number') delete opts.indent;
 
@@ -22,17 +49,20 @@ function purgeSpinnerOptions(options) {
 function purgeSpinnersOptions({ spinner, disableSpins, ...others }) {
   const colors = colorOptions(others);
   const prefixes = prefixOptions(others);
-  const disableSpinsOption = typeof disableSpins === 'boolean' ? { disableSpins } : {};
+  const disableSpinsOption =
+    typeof disableSpins === 'boolean' ? { disableSpins } : {};
   spinner = turnToValidSpinner(spinner);
 
-  return { ...colors, ...prefixes, ...disableSpinsOption, spinner }
+  return { ...colors, ...prefixes, ...disableSpinsOption, spinner };
 }
 
 function turnToValidSpinner(spinner = {}) {
   const platformSpinner = terminalSupportsUnicode() ? dots : dashes;
   if (!typeof spinner === 'object') return platformSpinner;
+
   let { interval, frames } = spinner;
-  if (!Array.isArray(frames) || frames.length < 1) frames = platformSpinner.frames;
+  if (!Array.isArray(frames) || frames.length < 1)
+    frames = platformSpinner.frames;
   if (typeof interval !== 'number') interval = platformSpinner.interval;
 
   return { interval, frames };
@@ -40,7 +70,7 @@ function turnToValidSpinner(spinner = {}) {
 
 function colorOptions({ color, succeedColor, failColor, spinnerColor }) {
   const colors = { color, succeedColor, failColor, spinnerColor };
-  Object.keys(colors).forEach(key => {
+  Object.keys(colors).forEach((key) => {
     if (!VALID_COLORS.includes(colors[key])) delete colors[key];
   });
 
@@ -48,7 +78,7 @@ function colorOptions({ color, succeedColor, failColor, spinnerColor }) {
 }
 
 function prefixOptions({ succeedPrefix, failPrefix }) {
-  if(terminalSupportsUnicode()) {
+  if (terminalSupportsUnicode()) {
     succeedPrefix = succeedPrefix || '✓';
     failPrefix = failPrefix || '✖';
   } else {
@@ -60,24 +90,30 @@ function prefixOptions({ succeedPrefix, failPrefix }) {
 }
 
 function breakText(text, prefixLength) {
-  return text.split('\n')
-    .map((line, index) => index === 0 ? breakLine(line, prefixLength) : breakLine(line, 0))
+  return text
+    .split('\n')
+    .map((line, index) =>
+      index === 0 ? breakLine(line, prefixLength) : breakLine(line, 0)
+    )
     .join('\n');
 }
 
 function breakLine(line, prefixLength) {
   const columns = process.stderr.columns || 95;
-  return line.length  >= columns - prefixLength
-    ? `${line.substring(0, columns - prefixLength - 1)}\n${
-      breakLine(line.substring(columns - prefixLength - 1, line.length), 0)
-    }`
+  return line.length >= columns - prefixLength
+    ? `${line.substring(0, columns - prefixLength - 1)}\n${breakLine(
+        line.substring(columns - prefixLength - 1, line.length),
+        0
+      )}`
     : line;
 }
 
 function getLinesLength(text, prefixLength) {
   return stripAnsi(text)
     .split('\n')
-    .map((line, index) => index === 0 ? line.length + prefixLength : line.length);
+    .map((line, index) =>
+      index === 0 ? `${stringWidth(line)}${prefixLength}` : stringWidth(line)
+    );
 }
 
 function writeStream(stream, output, rawLines) {
@@ -97,14 +133,16 @@ function cleanStream(stream, rawLines) {
 }
 
 function terminalSupportsUnicode() {
-    // The default command prompt and powershell in Windows do not support Unicode characters.
-    // However, the VSCode integrated terminal and the Windows Terminal both do.
-    return process.platform !== 'win32'
-      || process.env.TERM_PROGRAM === 'vscode'
-      || !!process.env.WT_SESSION
+  // The default command prompt and powershell in Windows do not support Unicode characters.
+  // However, the VSCode integrated terminal and the Windows Terminal both do.
+  return (
+    process.platform !== 'win32' ||
+    process.env.TERM_PROGRAM === 'vscode' ||
+    !!process.env.WT_SESSION
+  );
 }
 
-module.exports = {
+export {
   purgeSpinnersOptions,
   purgeSpinnerOptions,
   colorOptions,
@@ -113,4 +151,4 @@ module.exports = {
   writeStream,
   cleanStream,
   terminalSupportsUnicode,
-}
+};

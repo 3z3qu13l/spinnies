@@ -1,6 +1,6 @@
 'use strict';
 
-const expect = require('chai').expect
+import { expect } from 'chai';
 
 function expectToBehaveLikeAnUpdate(self, status) {
   const currentStatus = status === 'update' ? 'succeed' : status;
@@ -15,20 +15,28 @@ function expectToBehaveLikeAnUpdate(self, status) {
 
     context('when not specifying a spinner name', () => {
       it('throws an error', () => {
-          expect(() => self.spinnies[status]({})).to.throw('A spinner reference name must be specified');
+        expect(() => self.spinnies[status]({})).to.throw(
+          'A spinner reference name must be specified'
+        );
       });
     });
 
     context('when specifying a non-existent spinner name', () => {
       it('throws an error', () => {
-        expect(() => self.spinnies[status]('i-dont-exist')).to.throw('No spinner initialized with name i-dont-exist')
+        expect(() => self.spinnies[status]('i-dont-exist')).to.throw(
+          'No spinner initialized with name i-dont-exist'
+        );
       });
     });
 
     context('when specifying options', () => {
       context('when options are correct', () => {
         it('overrides the default options', () => {
-          const options = { text: 'updated text', color: 'black', spinnerColor: 'black' };
+          const options = {
+            text: 'updated text',
+            color: 'black',
+            spinnerColor: 'black',
+          };
           const spinner = self.spinnies[status]('spinner', options);
           expect(spinner).to.include(options);
         });
@@ -38,14 +46,20 @@ function expectToBehaveLikeAnUpdate(self, status) {
         it('mantains the previous options', () => {
           const options = { text: 42, color: 'foo', spinnerColor: 'bar' };
           const spinner = self.spinnies[currentStatus]('spinner', options);
-          expect(spinner).to.include({ text: 'spinner', spinnerColor: 'greenBright' });
+          expect(spinner).to.include({
+            text: 'spinner',
+            spinnerColor: 'greenBright',
+          });
         });
       });
 
       context('when specifying invalid attributes', () => {
         it('ignores those attributes', () => {
-          const options = { text: 'updated text', color: 'black', spinnerColor: 'black' };
-          const invalidOptions = { foo: 42, bar: 'bar'}
+          const options = {
+            text: 'updated text',
+            color: 'black',
+            spinnerColor: 'black',
+          };
           const spinner = self.spinnies[status]('spinner', options);
           expect(spinner).to.include(options);
           expect(spinner).to.not.have.any.keys('foo', 'bar');
@@ -55,7 +69,6 @@ function expectToBehaveLikeAnUpdate(self, status) {
   });
 }
 
-module.exports = {
+export {
   expectToBehaveLikeAnUpdate,
-}
-
+};

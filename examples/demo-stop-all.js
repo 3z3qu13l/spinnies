@@ -1,6 +1,6 @@
-const Spinners = require('..');
+import Spinnies from '../index.js';
 
-const spinners = new Spinners();
+const spinners = new Spinnies();
 
 spinners.add('first-spinner', { text: 'Lorem Ipsum is simply dummy text' });
 

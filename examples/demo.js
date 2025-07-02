@@ -1,10 +1,10 @@
-const Spinners = require('..');
+import Spinnies from '../index.js';
 
 const fruits = { 
   interval: 150,
   frames: ['🍇', '🍈', '🍉', '🍋']
 }
-const spinners = new Spinners({
+const spinners = new Spinnies({
   spinner: fruits,
   color: 'blue',
   succeedColor: 'green',

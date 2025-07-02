@@ -1,15 +1,14 @@
 'use strict';
 
-const expect = require('chai').expect
-
-const Spinnies = require('..');
-const { expectToBehaveLikeAnUpdate } = require('./behaviours.test');
+import { expect } from 'chai';
+import Spinnies from '../index.js';
+import { expectToBehaveLikeAnUpdate } from './behaviours.test.js';
 
 setInterval = (fn) => fn();
 setTimeout = (fn) => fn();
 process.stderr.write = () => {};
 
-describe('Spinnies', () => {
+describe('Spinnies', function () {
   beforeEach('constructor', () => {
     this.spinnies = new Spinnies();
     this.spinnersOptions = {
@@ -25,7 +24,9 @@ describe('Spinnies', () => {
       describe('validations', () => {
         context('when no spinner name specified', () => {
           it('throws an error', () => {
-            expect(() => this.spinnies.add()).to.throw('A spinner reference name must be specified');
+            expect(() => this.spinnies.add()).to.throw(
+              'A spinner reference name must be specified'
+            );
           });
         });
       });
@@ -45,7 +46,9 @@ describe('Spinnies', () => {
 
         context('when initial text is specified', () => {
           it('uses the specified spinner text', () => {
-            const spinner = this.spinnies.add('spinner-name', { text: 'Hello spinner-name' });
+            const spinner = this.spinnies.add('spinner-name', {
+              text: 'Hello spinner-name',
+            });
             expect(spinner.text).to.eq('Hello spinner-name');
           });
         });
@@ -53,15 +56,30 @@ describe('Spinnies', () => {
         context('when specifying options', () => {
           context('when options are correct', () => {
             it('overrides the default options', () => {
-              const options = { color: 'black', spinnerColor: 'black', succeedColor: 'black', failColor: 'black', status: 'non-spinnable', indent: 2 };
+              const options = {
+                color: 'black',
+                spinnerColor: 'black',
+                succeedColor: 'black',
+                failColor: 'black',
+                status: 'non-spinnable',
+                indent: 2,
+              };
               const spinner = this.spinnies.add('spinner-name', options);
-              expect(spinner).to.include({ ...this.spinnersOptions, ...options });
+              expect(spinner).to.include({
+                ...this.spinnersOptions,
+                ...options,
+              });
             });
           });
 
           context('when options are not valid', () => {
             it('mantains the default options', () => {
-              const options = { color: 'foo', spinnerColor: 'bar', status: 'buz', indent: 'baz' };
+              const options = {
+                color: 'foo',
+                spinnerColor: 'bar',
+                status: 'buz',
+                indent: 'baz',
+              };
               const spinner = this.spinnies.add('spinner-name', options);
               expect(spinner).to.include(this.spinnersOptions);
             });
@@ -74,7 +92,9 @@ describe('Spinnies', () => {
       describe('validations', () => {
         context('when no spinner name specified', () => {
           it('throws an error', () => {
-            expect(() => this.spinnies.remove()).to.throw('A spinner reference name must be specified');
+            expect(() => this.spinnies.remove()).to.throw(
+              'A spinner reference name must be specified'
+            );
           });
         });
       });
