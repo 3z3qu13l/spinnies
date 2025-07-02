@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    open-pull-requests-limit: 10
+    schedule:
+      interval: "daily"
+      time: "07:00"
+      timezone: Europe/Paris
+    versioning-strategy: "increase-if-necessary"
+    rebase-strategy: auto
+    target-branch: "master"
+    labels:
+      - dependencies
+      - npm
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    open-pull-requests-limit: 10
+    schedule:
+      interval: "weekly"
+      time: "07:00"
+      timezone: Europe/Paris
+    rebase-strategy: auto
+    target-branch: "master"
+    labels:
+      - dependencies
+      - actions
