@@ -2,9 +2,14 @@
   "name": "spinnies",
   "version": "0.5.1",
   "description": "Create and manage multiple spinners in command-line interface programs",
+  "type": "module",
   "main": "index.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "types": "index.d.ts",
   "scripts": {
-    "test": "npx mocha test"
+    "test": "npx mocha"
   },
   "keywords": [
     "node",
@@ -27,7 +32,7 @@
   "author": "Juan Bautista Carpanelli <juanbanelli@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:jcarpanelli/spinnies.git"
+    "url": "https://github.com/jcarpanelli/spinnies.git"
   },
   "bugs": {
     "url": "https://github.com/jcarpanelli/spinnies/issues"
@@ -35,12 +40,13 @@
   "homepage": "https://github.com/jcarpanelli/spinnies#readme",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^2.4.2",
-    "cli-cursor": "^3.0.0",
-    "strip-ansi": "^5.2.0"
+    "chalk": "5.4.1",
+    "cli-cursor": "5.0.0",
+    "strip-ansi": "7.1.0",
+    "string-width": "7.2.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^6.1.4"
+    "chai": "5.2.0",
+    "mocha": "11.7.1"
   }
 }
