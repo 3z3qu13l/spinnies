@@ -1,6 +1,6 @@
 {
   "name": "spinnies",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Create and manage multiple spinners in command-line interface programs",
   "type": "module",
   "main": "index.js",
@@ -13,31 +13,21 @@
   },
   "keywords": [
     "node",
-    "nodejs",
-    "node.js",
-    "multiple",
-    "multi",
-    "multispinner",
     "spinner",
-    "spinners",
-    "loadre",
-    "loading",
-    "loading-bar",
     "cli",
     "console",
     "command-line",
-    "command",
     "terminal"
   ],
   "author": "Juan Bautista Carpanelli <juanbanelli@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jcarpanelli/spinnies.git"
+    "url": "https://github.com/3z3qu13l/spinnies.git"
   },
   "bugs": {
-    "url": "https://github.com/jcarpanelli/spinnies/issues"
+    "url": "https://github.com/3z3qu13l/spinnies/issues"
   },
-  "homepage": "https://github.com/jcarpanelli/spinnies#readme",
+  "homepage": "https://github.com/3z3qu13l/spinnies#readme",
   "license": "MIT",
   "dependencies": {
     "cli-cursor": "5.0.0",

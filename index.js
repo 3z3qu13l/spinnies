@@ -47,10 +47,10 @@ class Spinnies {
   }
 
   add(name, options = {}) {
-    if (typeof name !== 'string')
-      throw Error('A spinner reference name must be specified');
+    if (typeof name !== 'string') throw Error('A spinner reference name must be specified');
 
     if (!options.text) options.text = name;
+
     const spinnerProperties = {
       ...colorOptions(this.options),
       succeedPrefix: this.options.succeedPrefix,
@@ -88,11 +88,8 @@ class Spinnies {
   }
 
   remove(name) {
-    if (typeof name !== 'string')
-      throw Error('A spinner reference name must be specified');
-
-    if (!this.spinners[name])
-      throw new Error(`No spinner initialized with name ${name}`);
+    if (typeof name !== 'string') throw Error('A spinner reference name must be specified');
+    if (!this.spinners[name]) throw new Error(`No spinner initialized with name ${name}`);
 
     const spinner = this.spinners[name];
     delete this.spinners[name];
@@ -103,6 +100,7 @@ class Spinnies {
   stopAll(newStatus = 'stopped') {
     Object.keys(this.spinners).forEach((name) => {
       const { status: currentStatus } = this.spinners[name];
+
       if (
         currentStatus !== 'fail' &&
         currentStatus !== 'succeed' &&
@@ -129,11 +127,8 @@ class Spinnies {
   }
 
   setSpinnerProperties(name, options, status) {
-    if (typeof name !== 'string')
-      throw Error('A spinner reference name must be specified');
-
-    if (!this.spinners[name])
-      throw Error(`No spinner initialized with name ${name}`);
+    if (typeof name !== 'string') throw Error('A spinner reference name must be specified');
+    if (!this.spinners[name]) throw Error(`No spinner initialized with name ${name}`);
 
     options = purgeSpinnerOptions(options);
     status = status || this.spinners[name].status || 'spinning';
@@ -149,8 +144,10 @@ class Spinnies {
     
     clearInterval(this.currentInterval);
     this.currentInterval = this.loopStream();
+
     if (!this.isCursorHidden) cliCursor.hide();
     this.isCursorHidden = true;
+
     this.checkIfActiveSpinners();
   }
 
@@ -170,7 +167,8 @@ class Spinnies {
     let output = '';
     const linesLength = [];
     const hasActiveSpinners = this.hasActiveSpinners();
-    Object.values(this.spinners).map(
+
+    Object.values(this.spinners).forEach(
       ({
         text,
         status,
@@ -221,6 +219,7 @@ class Spinnies {
     if (!hasActiveSpinners) readline.clearScreenDown(this.stream);
     writeStream(this.stream, output, linesLength);
     if (hasActiveSpinners) cleanStream(this.stream, linesLength);
+
     this.lineCount = linesLength.length;
   }
 
