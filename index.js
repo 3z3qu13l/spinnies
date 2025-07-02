@@ -1,7 +1,7 @@
 'use strict';
 
 import readline from 'readline';
-import chalk from 'chalk';
+import colors from 'yoctocolors';
 import cliCursor from 'cli-cursor';
 import spinners from './spinners.json' with { type: 'json' };
 import {
@@ -189,26 +189,26 @@ class Spinnies {
           case 'spinning': {
             prefixLength += frame.length + 1;
             text = breakText(text, prefixLength);
-            line = `${chalk[spinnerColor](frame)} ${
-              color ? chalk[color](text) : text
+            line = `${colors[spinnerColor](frame)} ${
+              color ? colors[color](text) : text
             }`;
             break;
           }
           case 'succeed': {
             prefixLength += succeedPrefix.length + 1;
             if (hasActiveSpinners) text = breakText(text, prefixLength);
-            line = `${chalk.green(succeedPrefix)} ${chalk[succeedColor](text)}`;
+            line = `${colors.green(succeedPrefix)} ${colors[succeedColor](text)}`;
             break;
           }
           case 'fail': {
             prefixLength += failPrefix.length + 1;
             if (hasActiveSpinners) text = breakText(text, prefixLength);
-            line = `${chalk.red(failPrefix)} ${chalk[failColor](text)}`;
+            line = `${colors.red(failPrefix)} ${colors[failColor](text)}`;
             break;
           }
           default: {
             if (hasActiveSpinners) text = breakText(text, prefixLength);
-            line = color ? chalk[color](text) : text;
+            line = color ? colors[color](text) : text;
             break;
           }
         }

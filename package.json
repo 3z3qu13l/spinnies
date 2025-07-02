@@ -40,10 +40,10 @@
   "homepage": "https://github.com/jcarpanelli/spinnies#readme",
   "license": "MIT",
   "dependencies": {
-    "chalk": "5.4.1",
     "cli-cursor": "5.0.0",
     "strip-ansi": "7.1.0",
-    "string-width": "7.2.0"
+    "string-width": "7.2.0",
+    "yoctocolors": "2.1.1"
   },
   "devDependencies": {
     "chai": "5.2.0",

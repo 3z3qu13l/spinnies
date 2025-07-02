@@ -2,7 +2,6 @@
 > Node.js module to create and manage multiple spinners in command-line interface programs
 
 [![npm](https://img.shields.io/npm/v/spinnies.svg)](https://www.npmjs.com/package/spinnies)
-[![CircleCI](https://circleci.com/gh/jcarpanelli/spinnies.svg?style=shield)](https://circleci.com/gh/jcarpanelli/spinnies)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -39,10 +38,10 @@ This library follows a **non-error-throwing** philosophy. If you provide an inva
 
 Parameters
 - **options** - `object`:
-  - **color** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors). The default value is `white`.
-  - **succeedColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors). The default value is `green`.
-  - **failColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors). The default value is `red`.
-  - **spinnerColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors). The default value is `greenBright`.
+  - **color** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors). The default value is `white`.
+  - **succeedColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors). The default value is `green`.
+  - **failColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors). The default value is `red`.
+  - **spinnerColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors). The default value is `greenBright`.
   - **succeedPrefix** - `string`: The default value is ✓.
   - **failPrefix**- `string`: The default value is ✖.
   - **spinner**- `object`:
@@ -73,9 +72,9 @@ Parameters:
   - **text**: - `string`: Optional text to show in the spinner. If none is provided, the `name` field will be shown.
   - **indent**: - `number`: Optional, indent the spinner with the given number of spaces.
   - **status** - `string`: Initial status of the spinner. Valid statuses are: `succeed`, `fail`, `spinning`, `non-spinnable`and `stopped`.
-  - **color** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
-  - **succeedColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
-  - **failColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
+  - **color** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
+  - **succeedColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
+  - **failColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
 
 Return value: Returns the spinner's options.
 
@@ -113,9 +112,9 @@ Parameters:
 - **options** - `object`:
   - **text**: - `string`: Optional text to show in the spinner. If none is provided, the `name` field will be shown.
   - **status** - `string`: New status of the spinner. Valid statuses are: `succeed`, `fail`, `spinning`, `non-spinnable`and `stopped`.
-  - **color** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
-  - **succeedColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
-  - **failColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
+  - **color** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
+  - **succeedColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
+  - **failColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
 
 Return value: Returns the spinner's options.
 
@@ -137,7 +136,7 @@ Parameters:
 - **name** - `string`: spinner reference name.
 - **options** - `object`:
   - **text**: - `string`: Optional text to show in the spinner. If none is provided, the `name` field will be shown.
-  - **succeedColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
+  - **succeedColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
 
 Return value: Returns the spinner's options.
 
@@ -159,7 +158,7 @@ Parameters:
 - **name** - `string`: spinner reference name.
 - **options** - `object`:
   - **text**: - `string`: Optional text to show in the spinner. If none is provided, the `name` field will be shown.
-  - **failColor** - `string`: Any valid [chalk color](https://github.com/chalk/chalk#colors).
+  - **failColor** - `string`: Any valid [yoctocolors color](https://github.com/sindresorhus/yoctocolors/#colors).
 
 Return value: Returns the spinner's options.
 
@@ -180,15 +179,9 @@ Stops the spinners and sets the non-succeeded and non-failed ones to the provide
 #### hasActiveSpinners()
 Return value: returns `false` if all spinners have succeeded, failed or have been stopped.
 
-
 ## Contribute
 
 Star it, fork it, improve it, PR it! :raised_hands:.
-
-
-## Acknowledgements
-
-Thanks to [chalk](https://github.com/chalk/chalk) for helping making this lib colorful :rainbow: and to [ora](https://github.com/sindresorhus/ora) which was a great inspiration :unicorn:.
 
 ## License
 

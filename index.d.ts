@@ -24,39 +24,39 @@ declare namespace Spinnies {
     status?: SpinnerStatus;
 
     /**
-     * Any valid chalk color.
+     * Any valid yoctocolors color.
      */
     color?: string;
 
     /**
-     * Any valid chalk color.
+     * Any valid yoctocolors color.
      */
     succeedColor?: string;
 
     /**
-     * Any valid chalk color.
+     * Any valid yoctocolors color.
      */
     failColor?: string;
   }
 
   interface Options {
     /**
-     * Any valid chalk color. The default value is white.
+     * Any valid yoctocolors color. The default value is white.
      */
     color?: string;
 
     /**
-     * Any valid chalk color. The default value is green.
+     * Any valid yoctocolors color. The default value is green.
      */
     succeedColor?: string;
 
     /**
-     * Any valid chalk color. The default value is red.
+     * Any valid yoctocolors color. The default value is red.
      */
     failColor?: string;
 
     /**
-     * Any valid chalk color. The default value is greenBright.
+     * Any valid yoctocolors color. The default value is greenBright.
      */
     spinnerColor?: string;
 

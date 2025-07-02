@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `succeedPrefix` and `failPrefix` (#8). Thanks @RedDuckss!
 
 ### Changed
-- Set terminal color as default text color, and avoid using `chalk.white` (https://github.com/jcarpanelli/spinnies/commit/2da89d852fc6a89bb06715cccba94ccd632b4430)
+- Set terminal color as default text color, and avoid using `yoctocolors.white` (https://github.com/jcarpanelli/spinnies/commit/2da89d852fc6a89bb06715cccba94ccd632b4430)
 
 ### Removed
 - Remove default non-spinnable text prefix (https://github.com/jcarpanelli/spinnies/commit/38e6637f79fbc3712889ee6cc59f94cd91d1da1e)
