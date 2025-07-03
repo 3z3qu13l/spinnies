@@ -1,7 +1,6 @@
 # ![spin](https://i.ibb.co/4M0J13j/spin.png) Spinnies ![spin](https://i.ibb.co/4M0J13j/spin.png)
 > Node.js module to create and manage multiple spinners in command-line interface programs
 
-[![npm](https://img.shields.io/npm/v/spinnies.svg)](https://www.npmjs.com/package/spinnies)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -26,6 +25,8 @@ setTimeout(() => {
   spinnies.succeed('spinner-1', { text: 'Success!' });
   spinnies.fail('spinner-2', { text: 'Fail :(' });
 }, 2000);
+
+spinnies.destroy();
 ```
 
 ## API
@@ -101,8 +102,6 @@ Removes a spinner.
 Parameters:
 - **name** - `string`: spinner reference name.
 
-Return value: Returns the spinner's options.
-
 #### update(name, [options])
 
 Updates the spinner with name `name` with the provided options.
@@ -175,6 +174,10 @@ spinnies.fail('spinner-1', { text: 'I failed', failColor: 'redBright' });
 #### stopAll([status])
 
 Stops the spinners and sets the non-succeeded and non-failed ones to the provided status, which can be `succeed`, `fail` or `stopped`. You can see an example [here](https://github.com/jcarpanelli/spinnies/blob/master/examples/demo-stop-all.js).
+
+#### destroy()
+
+Proper cleanup when the instance is no longer needed
 
 #### hasActiveSpinners()
 Return value: returns `false` if all spinners have succeeded, failed or have been stopped.
