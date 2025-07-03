@@ -104,7 +104,7 @@ declare class Spinnies {
   /**
    * Remove spinner with name.
    */
-  remove: (name: string) => Spinnies.SpinnerOptions;
+  remove: (name: string) => void;
 
   /**
    * Updates the spinner with name name with the provided options.
@@ -136,6 +136,11 @@ declare class Spinnies {
   stopAll: (status?: Spinnies.StopAllStatus) => {
     [name: string]: Spinnies.SpinnerOptions;
   };
+
+  /**
+   * Proper cleanup when the instance is no longer needed
+   */
+  destroy: () => void;
 
   /**
    * @returns false if all spinners have succeeded, failed or have been stopped

@@ -37,14 +37,13 @@ describe('utils', function ()  {
             expect(colors).to.not.have.any.keys('foo', 'bar');
           });
 
-          it('removes invalid colors', function ()  {
+          it('replace with default if invalid colors', function ()  {
             const colors = colorOptions({
               ...this.colors,
               spinnerColor: 'foo',
               succeedColor: 'bar',
             });
-            expect(colors).to.include({ color: 'blue', failColor: 'blue' });
-            expect(colors).to.not.have.any.keys('spinnerColor', 'succeedColor');
+            expect(colors).to.include({ color: 'blue', failColor: 'blue', spinnerColor: 'greenBright', succeedColor: 'green' });
           });
         }
       );

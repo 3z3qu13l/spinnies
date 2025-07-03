@@ -103,8 +103,7 @@ describe('Spinnies', function () {
         this.spinnies.add('spinner-name', this.spinnerOptions);
         expect(this.spinnies.spinners).to.have.keys('spinner-name');
 
-        const spinner = this.spinnies.remove('spinner-name');
-        expect(spinner).to.include(this.spinnersOptions);
+        this.spinnies.remove('spinner-name');
         expect(this.spinnies.spinners).to.not.have.keys('spinner-name');
       });
     });
