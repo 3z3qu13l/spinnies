@@ -4,6 +4,8 @@ run-name: PR ${{ github.event.pull_request.title }}
 on:
   pull_request:
     branches: [ master, main ]
+  push:
+    branches: [ master, main ]
 
 env:
   CI: true
@@ -29,3 +31,9 @@ jobs:
 
       - name: Run tests
         run: npm run test
+
+      - name: Run demo
+        run: npm run demo
+
+      - name: Run demo-stop-all
+        run: npm run demo-stop-all
