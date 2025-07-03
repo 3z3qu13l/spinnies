@@ -74,4 +74,6 @@ setTimeout(() => {
     spinners.succeed('spinner-that-changes', { text: 'Bye!', succeedColor: 'blue' });
 }, 18000);
 
-spinners.destroy();
+setTimeout(() => {
+    spinners.destroy();
+}, 21000);

@@ -36,4 +36,6 @@ setTimeout(() => {
     spinners.stopAll('fail');
 }, 15000);
 
-spinners.destroy();
+setTimeout(() => {
+    spinners.destroy();
+}, 16000);
