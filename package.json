@@ -9,6 +9,11 @@
   },
   "types": "index.d.ts",
   "scripts": {
+    "demo": "node examples/demo.js",
+    "demo-stop-all": "node examples/demo-stop-all.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "pretest": "npm run lint",
     "test": "npx mocha"
   },
   "keywords": [
@@ -31,12 +36,15 @@
   "license": "MIT",
   "dependencies": {
     "cli-cursor": "5.0.0",
-    "strip-ansi": "7.1.0",
     "string-width": "7.2.0",
+    "strip-ansi": "7.1.0",
     "yoctocolors": "2.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "9.30.1",
     "chai": "5.2.0",
+    "eslint": "9.30.1",
+    "globals": "16.3.0",
     "mocha": "11.7.1"
   }
 }
