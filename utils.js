@@ -22,12 +22,17 @@ const DEFAULT_COLOR = {
     SPINNER: 'greenBright',
     SUCCEED: 'green',
     FAILED: 'red',
-    STOPPED: 'grey',
+    STOPPED: 'gray',
 };
 
 const MAX_INDENT = 100;
-const MAX_RECURSIVE = 50;
-const TERMINAL_SUPPORTS_UNICODE = process.platform !== 'win32' || process.env.TERM_PROGRAM === 'vscode' || Boolean(process.env.WT_SESSION);
+const MAX_RECURSIVE = 15;
+const TERMINAL_SUPPORTS_UNICODE =
+    process.platform !== 'win32' ||
+    process.env.TERM_PROGRAM === 'vscode' ||
+    Boolean(process.env.WT_SESSION) ||
+    Boolean(process.env.TERM_PROGRAM) ||
+    process.env.TERM === 'xterm-256color';
 
 function colorOptions({ color, succeedColor, failColor, spinnerColor }) {
     return {
@@ -98,19 +103,22 @@ function breakLine(line, prefixLength, depth = 0) {
 
     // Find a safe breaking point without splitting wide characters
     let width = 0;
-    let i = 0;
-    while (i < line.length && width + stringWidth(line[i]) <= limit) {
-        width += stringWidth(line[i]);
-        i++;
+    let index = 0;
+    while (index < line.length && width + stringWidth(line[index]) <= limit) {
+        width += stringWidth(line[index]);
+        index++;
     }
 
-    const part = line.slice(0, i);
-    const rest = line.slice(i);
+    const part = line.slice(0, index);
+    const rest = line.slice(index).replace(/^\s+/, '');
+    if (!rest) return part;
+
     return `${part}\n${breakLine(rest, 0, depth + 1)}`;
 }
 
 function breakText(text, prefixLength) {
     if (typeof text !== 'string') return '';
+    if (typeof prefixLength !== 'number') return '';
 
     return text
         .split('\n')
@@ -127,9 +135,7 @@ function getLinesLength(text, prefixLength) {
 }
 
 function writeStream(stream, output, rawLines) {
-    if (!stream || stream.destroyed) {
-        return false;
-    }
+    if (!stream || stream.destroyed) return false;
 
     try {
         stream.write(output);

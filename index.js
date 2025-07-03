@@ -36,26 +36,36 @@ class Spinnies {
         this.stream = process.stderr;
         this.lineCount = 0;
         this.currentFrameIndex = 0;
+        this.isDestroyed = false;
 
-        this.spin = !this.options.disableSpins && !process.env.CI && process.stderr?.isTTY;
+        this.spin = !this.options.disableSpins && !process.env.CI && this.stream?.isTTY && this.stream?.writable;
         if (!this.spin) {
             console.warn('[spinnies] Falling back to raw output (TTY not detected or spins disabled)');
         }
 
         this.exitHandler = this.handleExit.bind(this);
         this.sigintHandler = this.handleSigint.bind(this);
+        this.sigtermHandler = this.handleSigterm.bind(this);
         
-        this.bindSigint();
+        this.bindEventListeners();
     }
 
     cleanup() {
+        if (this.isDestroyed) return;
+
         if (this.currentInterval) {
             clearInterval(this.currentInterval);
             this.currentInterval = null;
         }
-        if (this.isCursorHidden) {
+
+        if (this.isCursorHidden && this.stream?.writable) {
             cliCursor.show();
             this.isCursorHidden = false;
+        }
+
+        if (this.lineCount > 0 && this.stream?.writable) {
+            readline.moveCursor(this.stream, 0, this.lineCount);
+            readline.clearScreenDown(this.stream);
         }
     }
 
@@ -65,15 +75,51 @@ class Spinnies {
 
     handleSigint() {
         this.cleanup();
-        process.exit(0);
+        process.exit(130);
+    }
+    
+    handleSigterm() {
+        this.cleanup();
+        process.exit(143);
+    }
+    
+    bindEventListeners() {
+        if (this.isDestroyed) return;
+        
+        try {
+            process.on('exit', this.exitHandler);
+            process.on('SIGINT', this.sigintHandler);
+            process.on('SIGTERM', this.sigtermHandler);
+        } catch (error) {}// eslint-disable-line
+    }
+
+    destroy() {
+        if (this.isDestroyed) return;
+        
+        this.isDestroyed = true;
+        try {
+            process.removeListener('exit', this.exitHandler);
+            process.removeListener('SIGINT', this.sigintHandler);
+            process.removeListener('SIGTERM', this.sigtermHandler);
+        } catch (error) {}// eslint-disable-line
+        
+        this.cleanup();
+
+        this.spinners = {};
+        this.options = null;
+        this.stream = null;
     }
 
     pick(name) {
+        if (typeof name !== 'string') return undefined;
+
         return this.spinners[name];
     }
 
     add(name, options = {}) {
-        if (typeof name !== 'string') throw new Error('A spinner reference name must be specified');
+        if (this.isDestroyed) throw new Error('Spinnies instance has been destroyed');
+
+        if (typeof name !== 'string' || !name.trim()) throw new Error('A spinner reference name must be specified');
         if (this.spinners[name]) throw new Error(`Spinner with name "${name}" already exists.`);
 
         if (!options.text) options.text = name;
@@ -93,6 +139,8 @@ class Spinnies {
     }
 
     update(name, options = {}) {
+        if (this.isDestroyed) throw new Error('Spinnies instance has been destroyed');
+        
         this.setSpinnerProperties(name, options, options.status);
         this.updateSpinnerState();
 
@@ -100,6 +148,8 @@ class Spinnies {
     }
 
     succeed(name, options = {}) {
+        if (this.isDestroyed) throw new Error('Spinnies instance has been destroyed');
+        
         this.setSpinnerProperties(name, options, 'succeed');
         this.updateSpinnerState();
 
@@ -107,6 +157,8 @@ class Spinnies {
     }
 
     fail(name, options = {}) {
+        if (this.isDestroyed) throw new Error('Spinnies instance has been destroyed');
+        
         this.setSpinnerProperties(name, options, 'fail');
         this.updateSpinnerState();
 
@@ -114,6 +166,8 @@ class Spinnies {
     }
 
     remove(name) {
+        if (this.isDestroyed) throw new Error('Spinnies instance has been destroyed');
+        
         if (typeof name !== 'string') throw new Error('A spinner reference name must be specified');
         if (!this.spinners[name]) throw new Error(`No spinner initialized with name ${name}`);
 
@@ -122,6 +176,8 @@ class Spinnies {
     }
 
     stopAll(newStatus = 'stopped') {
+        if (this.isDestroyed) throw new Error('Spinnies instance has been destroyed');
+        
         for (const name of Object.keys(this.spinners)) {
             const spinner = this.spinners[name];
             if (!['fail', 'succeed', 'non-spinnable'].includes(spinner.status)) {
@@ -158,6 +214,8 @@ class Spinnies {
     }
 
     updateSpinnerState() {
+        if (this.isDestroyed) return;
+
         if (!this.spin) {
             this.setRawStreamOutput();
             return;
@@ -168,11 +226,13 @@ class Spinnies {
             this.currentInterval = null;
         }
     
-        this.currentInterval = this.loopStream();
+        if (this.hasActiveSpinners()) {
+            this.currentInterval = this.loopStream();
 
-        if (!this.isCursorHidden) {
-            this.isCursorHidden = true;
-            cliCursor.hide();
+            if (!this.isCursorHidden) {
+                this.isCursorHidden = true;
+                cliCursor.hide();
+            }
         }
 
         this.checkIfActiveSpinners();
@@ -182,12 +242,20 @@ class Spinnies {
         const { frames, interval } = this.options.spinner;
 
         return setInterval(() => {
-            this.setStreamOutput(frames[this.currentFrameIndex]);
+            if (this.isDestroyed) return;
+
+            const success = this.setStreamOutput(frames[this.currentFrameIndex]);
+            if (!success) {
+                this.cleanup();
+                return;
+            }
             this.currentFrameIndex = (this.currentFrameIndex + 1) % frames.length;
-        }, interval);
+        }, Math.max(interval, 50)); // Minimum 50ms interval
     }
 
     setStreamOutput(frame = '') {
+        if (this.isDestroyed || !this.stream?.writable) return false;
+
         let output = '';
         const linesLength = [];
         const hasActiveSpinners = this.hasActiveSpinners();
@@ -242,42 +310,43 @@ class Spinnies {
 
         if (!hasActiveSpinners) readline.clearScreenDown(this.stream);
 
-        writeStream(this.stream, output, linesLength);
+        const writeSuccess = writeStream(this.stream, output, linesLength);
+        if (!writeSuccess) return false;
 
         if (hasActiveSpinners) cleanStream(this.stream, linesLength);
 
         this.lineCount = linesLength.length;
+        return true;
     }
 
     setRawStreamOutput() {
+        if (this.isDestroyed || !this.stream?.writable) return;
+
         for (const { text } of Object.values(this.spinners)) {
-            this.stream.write(`- ${text}\n`);
+            const prefix = '- ';
+            this.stream.write(`${prefix}${text}\n`);
         }
     }
 
     checkIfActiveSpinners() {
+        if (this.isDestroyed) return;
+
         if (this.hasActiveSpinners()) return;
 
         if (this.spin) {
             this.setStreamOutput();
-            readline.moveCursor(this.stream, 0, this.lineCount);
+            if (this.lineCount > 0) readline.moveCursor(this.stream, 0, this.lineCount);
+
             clearInterval(this.currentInterval);
-            this.isCursorHidden = false;
-            cliCursor.show();
+            this.currentInterval = null;
+
+            if (this.isCursorHidden) {
+                cliCursor.show();
+                this.isCursorHidden = false;
+            }
         }
 
         this.spinners = {};
-    }
-
-    bindSigint() {
-        process.on('exit', this.exitHandler);
-        process.on('SIGINT', this.sigintHandler);
-    }
-
-    destroy() {
-        process.removeListener('exit', this.exitHandler);
-        process.removeListener('SIGINT', this.sigintHandler);
-        this.cleanup();
     }
 }
 
