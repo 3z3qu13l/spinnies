@@ -17,14 +17,26 @@ const VALID_COLORS = new Set([
     'magentaBright', 'cyanBright', 'whiteBright',
 ]);
 
+const DEFAULT_COLOR = {
+    COLOR: 'white',
+    SPINNER: 'greenBright',
+    SUCCEED: 'green',
+    FAILED: 'red',
+    STOPPED: 'grey',
+};
+
 const MAX_INDENT = 100;
 const MAX_RECURSIVE = 50;
+const TERMINAL_SUPPORTS_UNICODE = process.platform !== 'win32' || process.env.TERM_PROGRAM === 'vscode' || Boolean(process.env.WT_SESSION);
 
-const TERMINAL_SUPPORTS_UNICODE = (
-    process.platform !== 'win32' ||
-    process.env.TERM_PROGRAM === 'vscode' ||
-    Boolean(process.env.WT_SESSION)
-);
+function colorOptions({ color, succeedColor, failColor, spinnerColor }) {
+    return {
+        color: VALID_COLORS.has(color) ? color : DEFAULT_COLOR.COLOR,
+        succeedColor: VALID_COLORS.has(succeedColor) ? succeedColor : DEFAULT_COLOR.SUCCEED,
+        failColor: VALID_COLORS.has(failColor) ? failColor : DEFAULT_COLOR.FAILED,
+        spinnerColor: VALID_COLORS.has(spinnerColor) ? spinnerColor : DEFAULT_COLOR.SPINNER,
+    };
+}
 
 function purgeSpinnerOptions(options) {
     const { text, status, indent } = options;
@@ -40,17 +52,10 @@ function purgeSpinnerOptions(options) {
     };
 }
 
-function purgeSpinnersOptions({ spinner, disableSpins, ...others }) {
-    const colors = colorOptions(others);
-    const prefixes = prefixOptions(others);
-    const disableSpinsOption = typeof disableSpins === 'boolean' ? { disableSpins } : {};
-    const validatedSpinner = validateSpinner(spinner);
-
+function prefixOptions({ succeedPrefix, failPrefix }) {
     return {
-        ...colors,
-        ...prefixes,
-        ...disableSpinsOption,
-        spinner: validatedSpinner
+        succeedPrefix: succeedPrefix ?? (TERMINAL_SUPPORTS_UNICODE ? '✓' : '√'),
+        failPrefix: failPrefix ?? (TERMINAL_SUPPORTS_UNICODE ? '✖' : '×'),
     };
 }
 
@@ -69,31 +74,21 @@ function validateSpinner(spinner = {}) {
     return { interval, frames };
 }
 
-function colorOptions({ color, succeedColor, failColor, spinnerColor }) {
+function purgeSpinnersOptions({ spinner, disableSpins, ...others }) {
+    const colors = colorOptions(others);
+    const prefixes = prefixOptions(others);
+    const disableSpinsOption = typeof disableSpins === 'boolean' ? { disableSpins } : {};
+    const validatedSpinner = validateSpinner(spinner);
+
     return {
-        color: VALID_COLORS.has(color) ? color : 'white',
-        succeedColor: VALID_COLORS.has(succeedColor) ? succeedColor : 'green',
-        failColor: VALID_COLORS.has(failColor) ? failColor : 'red',
-        spinnerColor: VALID_COLORS.has(spinnerColor) ? spinnerColor : 'greenBright',
+        ...colors,
+        ...prefixes,
+        ...disableSpinsOption,
+        spinner: validatedSpinner
     };
 }
 
-function prefixOptions({ succeedPrefix, failPrefix }) {
-    return {
-        succeedPrefix: succeedPrefix ?? (TERMINAL_SUPPORTS_UNICODE ? '✓' : '√'),
-        failPrefix: failPrefix ?? (TERMINAL_SUPPORTS_UNICODE ? '✖' : '×'),
-    };
-}
-
-function breakText(text, prefixLength) {
-    if (typeof text !== 'string') return '';
-
-    return text
-        .split('\n')
-        .map((line, index) => breakLine(line, index === 0 ? prefixLength : 0))
-        .join('\n');
-}
-
+// recursive function
 function breakLine(line, prefixLength, depth = 0) {
     const columns = process.stderr?.columns || 95;
     const limit = Math.max(2, columns - Math.max(0, prefixLength) - 1);
@@ -112,6 +107,15 @@ function breakLine(line, prefixLength, depth = 0) {
     const part = line.slice(0, i);
     const rest = line.slice(i);
     return `${part}\n${breakLine(rest, 0, depth + 1)}`;
+}
+
+function breakText(text, prefixLength) {
+    if (typeof text !== 'string') return '';
+
+    return text
+        .split('\n')
+        .map((line, index) => breakLine(line, index === 0 ? prefixLength : 0))
+        .join('\n');
 }
 
 function getLinesLength(text, prefixLength) {
@@ -155,5 +159,6 @@ export {
     getLinesLength,
     writeStream,
     cleanStream,
+    DEFAULT_COLOR,
     TERMINAL_SUPPORTS_UNICODE,
 };

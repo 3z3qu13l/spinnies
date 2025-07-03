@@ -10,6 +10,7 @@ import {
     colorOptions,
     breakText,
     getLinesLength,
+    DEFAULT_COLOR,
     TERMINAL_SUPPORTS_UNICODE,
     writeStream,
     cleanStream
@@ -21,9 +22,9 @@ class Spinnies {
     constructor(options = {}) {
         options = purgeSpinnersOptions(options);
         this.options = {
-            spinnerColor: 'greenBright',
-            succeedColor: 'green',
-            failColor: 'red',
+            spinnerColor: DEFAULT_COLOR.SPINNER,
+            succeedColor: DEFAULT_COLOR.SUCCEED,
+            failColor: DEFAULT_COLOR.FAILED,
             spinner: options.spinner ?? TERMINAL_SUPPORTS_UNICODE ? dots : dashes,
             disableSpins: false,
             ...options,
@@ -129,7 +130,7 @@ class Spinnies {
                     spinner.color = this.options[`${newStatus}Color`];
                 } else {
                     spinner.status = 'stopped';
-                    spinner.color = 'grey';
+                    spinner.color = DEFAULT_COLOR.STOPPED;
                 }
             }
         }

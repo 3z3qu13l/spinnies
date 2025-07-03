@@ -2,6 +2,7 @@
 
 import { expect } from 'chai';
 import Spinnies from '../index.js';
+import { DEFAULT_COLOR } from '../utils.js';
 import { expectToBehaveLikeAnUpdate } from './behaviours.test.js';
 
 setInterval = (fn) => fn();
@@ -12,9 +13,9 @@ describe('Spinnies', function () {
   beforeEach('constructor', () => {
     this.spinnies = new Spinnies();
     this.spinnersOptions = {
-      succeedColor: 'green',
-      failColor: 'red',
-      spinnerColor: 'greenBright',
+      succeedColor: DEFAULT_COLOR.SUCCEED,
+      failColor: DEFAULT_COLOR.FAILED,
+      spinnerColor: DEFAULT_COLOR.SPINNER,
       status: 'spinning',
     };
   });
@@ -140,7 +141,7 @@ describe('Spinnies', function () {
 
             expectToKeepFinishedSpinners();
             expect(this.thirdSpinner.status).to.eq('succeed');
-            expect(this.thirdSpinner.color).to.eq('green');
+            expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.SUCCEED);
           });
 
           it('sets non-finished spinners as fail', () => {
@@ -148,7 +149,7 @@ describe('Spinnies', function () {
 
             expectToKeepFinishedSpinners();
             expect(this.thirdSpinner.status).to.eq('fail');
-            expect(this.thirdSpinner.color).to.eq('red');
+            expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.FAILED);
           });
 
           it('sets non-finished spinners as stopped', () => {
@@ -156,7 +157,7 @@ describe('Spinnies', function () {
 
             expectToKeepFinishedSpinners();
             expect(this.thirdSpinner.status).to.eq('stopped');
-            expect(this.thirdSpinner.color).to.eq('grey');
+            expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.STOPPED);
           });
         });
 
@@ -166,7 +167,7 @@ describe('Spinnies', function () {
 
             expectToKeepFinishedSpinners();
             expect(this.thirdSpinner.status).to.eq('stopped');
-            expect(this.thirdSpinner.color).to.eq('grey');
+            expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.STOPPED);
           });
         });
       });
