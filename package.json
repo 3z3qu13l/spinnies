@@ -35,7 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "cli-cursor": "5.0.0",
-    "string-width": "7.2.0",
+    "string-width": "8.0.0",
     "strip-ansi": "7.1.0",
     "yoctocolors": "2.1.2"
   },
