@@ -1,19 +1,23 @@
-/* eslint-disable mocha/no-setup-in-describe */
 'use strict';
 
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
+import { after, afterEach, beforeEach, describe, it, mock } from 'node:test';
 import Spinnies from '../index.js';
 import { DEFAULT_COLOR } from '../utils.js';
-import { expectToBehaveLikeAnUpdate } from './behaviours.test.js';
+import { describeUpdateBehaviour } from './behaviours.js';
+import { assertHasExactKeys, assertIncludes } from './helpers.js';
 
-setInterval = (fn) => fn();// eslint-disable-line no-global-assign
-setTimeout = (fn) => fn();// eslint-disable-line no-global-assign
-process.stderr.write = () => {};
+// Spinnies renders on stderr: swallow every write so the reporter output stays readable.
+mock.method(process.stderr, 'write', () => true);
+after(() => mock.restoreAll());
 
-describe('Spinnies', function () {
-    beforeEach('constructor', () => {
-        this.spinnies = new Spinnies();
-        this.spinnersOptions = {
+describe('Spinnies', () => {
+    let spinnies;
+    let spinnersOptions;
+
+    beforeEach(() => {
+        spinnies = new Spinnies();
+        spinnersOptions = {
             succeedColor: DEFAULT_COLOR.SUCCEED,
             failColor: DEFAULT_COLOR.FAILED,
             spinnerColor: DEFAULT_COLOR.SPINNER,
@@ -21,42 +25,48 @@ describe('Spinnies', function () {
         };
     });
 
+    // Clears the render interval and the process listeners bound by the constructor.
+    afterEach(() => spinnies.destroy());
+
     describe('methods', () => {
         describe('#add', () => {
             describe('validations', () => {
-                context('when no spinner name specified', () => {
+                describe('when no spinner name specified', () => {
                     it('throws an error', () => {
-                        expect(() => this.spinnies.add()).to.throw(
-                            'A spinner reference name must be specified'
-                        );
+                        assert.throws(() => spinnies.add(), {
+                            message: 'A spinner reference name must be specified',
+                        });
                     });
                 });
             });
 
             describe('adding new spinners', () => {
                 it('has initial variables defined', () => {
-                    const spinner = this.spinnies.add('spinner');
-                    expect(spinner).to.include(this.spinnersOptions);
+                    const spinner = spinnies.add('spinner');
+
+                    assertIncludes(spinner, spinnersOptions);
                 });
 
-                context('when no initial text is specified', () => {
+                describe('when no initial text is specified', () => {
                     it('takes the spinner name as text', () => {
-                        const spinner = this.spinnies.add('spinner-name');
-                        expect(spinner.text).to.eq('spinner-name');
+                        const spinner = spinnies.add('spinner-name');
+
+                        assert.strictEqual(spinner.text, 'spinner-name');
                     });
                 });
 
-                context('when initial text is specified', () => {
+                describe('when initial text is specified', () => {
                     it('uses the specified spinner text', () => {
-                        const spinner = this.spinnies.add('spinner-name', {
+                        const spinner = spinnies.add('spinner-name', {
                             text: 'Hello spinner-name',
                         });
-                        expect(spinner.text).to.eq('Hello spinner-name');
+
+                        assert.strictEqual(spinner.text, 'Hello spinner-name');
                     });
                 });
 
-                context('when specifying options', () => {
-                    context('when options are correct', () => {
+                describe('when specifying options', () => {
+                    describe('when options are correct', () => {
                         it('overrides the default options', () => {
                             const options = {
                                 color: 'black',
@@ -66,15 +76,13 @@ describe('Spinnies', function () {
                                 status: 'non-spinnable',
                                 indent: 2,
                             };
-                            const spinner = this.spinnies.add('spinner-name', options);
-                            expect(spinner).to.include({
-                                ...this.spinnersOptions,
-                                ...options,
-                            });
+                            const spinner = spinnies.add('spinner-name', options);
+
+                            assertIncludes(spinner, { ...spinnersOptions, ...options });
                         });
                     });
 
-                    context('when options are not valid', () => {
+                    describe('when options are not valid', () => {
                         it('mantains the default options', () => {
                             const options = {
                                 color: 'foo',
@@ -82,8 +90,9 @@ describe('Spinnies', function () {
                                 status: 'buz',
                                 indent: 'baz',
                             };
-                            const spinner = this.spinnies.add('spinner-name', options);
-                            expect(spinner).to.include(this.spinnersOptions);
+                            const spinner = spinnies.add('spinner-name', options);
+
+                            assertIncludes(spinner, spinnersOptions);
                         });
                     });
                 });
@@ -92,83 +101,88 @@ describe('Spinnies', function () {
 
         describe('#remove', () => {
             describe('validations', () => {
-                context('when no spinner name specified', () => {
+                describe('when no spinner name specified', () => {
                     it('throws an error', () => {
-                        expect(() => this.spinnies.remove()).to.throw(
-                            'A spinner reference name must be specified'
-                        );
+                        assert.throws(() => spinnies.remove(), {
+                            message: 'A spinner reference name must be specified',
+                        });
                     });
                 });
             });
 
             it('removes the spinner from the spinners object', () => {
-                this.spinnies.add('spinner-name', this.spinnerOptions);
-                expect(this.spinnies.spinners).to.have.keys('spinner-name');
+                spinnies.add('spinner-name');
+                assertHasExactKeys(spinnies.spinners, 'spinner-name');
 
-                this.spinnies.remove('spinner-name');
-                expect(this.spinnies.spinners).to.not.have.keys('spinner-name');
+                spinnies.remove('spinner-name');
+                assertHasExactKeys(spinnies.spinners);
             });
         });
 
         describe('methods that modify the status of a spinner', () => {
-            beforeEach('initialize some spinners', () => {
-                this.spinnies.add('spinner');
-                this.spinnies.add('another-spinner');
-                this.spinnies.add('third-spinner');
-                this.spinnies.add('non-spinnable', { status: 'non-spinnable' });
+            beforeEach(() => {
+                spinnies.add('spinner');
+                spinnies.add('another-spinner');
+                spinnies.add('third-spinner');
+                spinnies.add('non-spinnable', { status: 'non-spinnable' });
             });
 
-            expectToBehaveLikeAnUpdate(this, 'succeed');
-            expectToBehaveLikeAnUpdate(this, 'fail');
-            expectToBehaveLikeAnUpdate(this, 'update');
+            describeUpdateBehaviour(() => spinnies, 'succeed');
+            describeUpdateBehaviour(() => spinnies, 'fail');
+            describeUpdateBehaviour(() => spinnies, 'update');
 
             describe('#stopAll', () => {
+                let spinner;
+                let anotherSpinner;
+                let nonSpinnable;
+                let thirdSpinner;
+
                 beforeEach(() => {
-                    this.spinner = this.spinnies.succeed('spinner');
-                    this.anotherSpinner = this.spinnies.fail('another-spinner');
-                    this.nonSpinnable = this.spinnies.pick('non-spinnable');
-                    this.thirdSpinner = this.spinnies.pick('third-spinner');
+                    spinner = spinnies.succeed('spinner');
+                    anotherSpinner = spinnies.fail('another-spinner');
+                    nonSpinnable = spinnies.pick('non-spinnable');
+                    thirdSpinner = spinnies.pick('third-spinner');
                 });
 
-                const expectToKeepFinishedSpinners = () => {
-                    expect(this.spinner.status).to.eq('succeed');
-                    expect(this.anotherSpinner.status).to.eq('fail');
-                    expect(this.nonSpinnable.status).to.eq('non-spinnable');
+                const assertFinishedSpinnersAreKept = () => {
+                    assert.strictEqual(spinner.status, 'succeed');
+                    assert.strictEqual(anotherSpinner.status, 'fail');
+                    assert.strictEqual(nonSpinnable.status, 'non-spinnable');
                 };
 
-                context('when providing a new status', () => {
+                describe('when providing a new status', () => {
                     it('sets non-finished spinners as succeed', () => {
-                        this.spinnies.stopAll('succeed');
+                        spinnies.stopAll('succeed');
 
-                        expectToKeepFinishedSpinners();
-                        expect(this.thirdSpinner.status).to.eq('succeed');
-                        expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.SUCCEED);
+                        assertFinishedSpinnersAreKept();
+                        assert.strictEqual(thirdSpinner.status, 'succeed');
+                        assert.strictEqual(thirdSpinner.color, DEFAULT_COLOR.SUCCEED);
                     });
 
                     it('sets non-finished spinners as fail', () => {
-                        this.spinnies.stopAll('fail');
+                        spinnies.stopAll('fail');
 
-                        expectToKeepFinishedSpinners();
-                        expect(this.thirdSpinner.status).to.eq('fail');
-                        expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.FAILED);
+                        assertFinishedSpinnersAreKept();
+                        assert.strictEqual(thirdSpinner.status, 'fail');
+                        assert.strictEqual(thirdSpinner.color, DEFAULT_COLOR.FAILED);
                     });
 
                     it('sets non-finished spinners as stopped', () => {
-                        this.spinnies.stopAll('foobar');
+                        spinnies.stopAll('foobar');
 
-                        expectToKeepFinishedSpinners();
-                        expect(this.thirdSpinner.status).to.eq('stopped');
-                        expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.STOPPED);
+                        assertFinishedSpinnersAreKept();
+                        assert.strictEqual(thirdSpinner.status, 'stopped');
+                        assert.strictEqual(thirdSpinner.color, DEFAULT_COLOR.STOPPED);
                     });
                 });
 
-                context('when not providing a new status', () => {
+                describe('when not providing a new status', () => {
                     it('sets non-finished spinners as stopped', () => {
-                        this.spinnies.stopAll();
+                        spinnies.stopAll();
 
-                        expectToKeepFinishedSpinners();
-                        expect(this.thirdSpinner.status).to.eq('stopped');
-                        expect(this.thirdSpinner.color).to.eq(DEFAULT_COLOR.STOPPED);
+                        assertFinishedSpinnersAreKept();
+                        assert.strictEqual(thirdSpinner.status, 'stopped');
+                        assert.strictEqual(thirdSpinner.color, DEFAULT_COLOR.STOPPED);
                     });
                 });
             });

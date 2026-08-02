@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "types": "index.d.ts",
   "scripts": {
@@ -14,7 +14,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "pretest": "npm run lint",
-    "test": "npx mocha"
+    "test": "node --test \"test/**/*.test.js\"",
+    "test:watch": "node --test --watch \"test/**/*.test.js\"",
+    "test:coverage": "node --test --experimental-test-coverage \"test/**/*.test.js\""
   },
   "keywords": [
     "node",
@@ -41,10 +43,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "chai": "6.2.2",
     "eslint": "10.8.0",
-    "eslint-plugin-mocha": "^11.1.0",
-    "globals": "17.8.0",
-    "mocha": "11.7.6"
+    "globals": "17.8.0"
   }
 }
