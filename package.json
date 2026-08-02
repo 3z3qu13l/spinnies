@@ -37,7 +37,7 @@
     "cli-cursor": "5.0.0",
     "string-width": "8.2.2",
     "strip-ansi": "7.2.0",
-    "yoctocolors": "2.1.2"
+    "yoctocolors": "2.2.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
