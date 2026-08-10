@@ -1,0 +1,6 @@
+.github/
+test/
+examples/
+eslint.config.js
+changelog.md
+.nvmrc
